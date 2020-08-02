@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/test', function () {
+    return response()->json(['message' => 'Invalid Character!'], 401);
+});
+
 
 Route::group([
     'middleware' =>  ['api'],
