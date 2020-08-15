@@ -110,7 +110,7 @@ class CreateTablesInitiate extends Migration
             $table->string('name');
             $table->integer('rank_score')->default(0);
             $table->integer('misc_score')->default(0);
-            $table->integer('order')->default(9999);
+            $table->integer('order')->default(1);
             $table->boolean('class_skill')->default(false);
             $table->boolean('untrained_skill')->default(false);
             $table->timestamps();
@@ -166,15 +166,17 @@ class CreateTablesInitiate extends Migration
             $table->bigInteger('character_id')->unsigned();
             $table->foreign('character_id')->references('id')->on('characters')->onDelete('cascade');
             $table->string('name')->default('Section Name');
+            $table->integer('order')->default(1);
             $table->timestamps();
         });
 
         Schema::create('notes', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('note_sections_id')->unsigned();
-            $table->foreign('note_sections_id')->references('id')->on('note_sections');
-            $table->string('name')->default('Item Name');
-            $table->text('summary');
+            $table->foreign('note_sections_id')->references('id')->on('note_sections')->onDelete('cascade');
+            $table->string('name')->default('Note Name');
+            $table->string('summary')->default('Note Summary');
+            $table->integer('order')->default(1);
             $table->timestamps();
         });
 
@@ -198,15 +200,16 @@ class CreateTablesInitiate extends Migration
             $table->id();
             $table->bigInteger('character_id')->unsigned();
             $table->foreign('character_id')->references('id')->on('characters')->onDelete('cascade');
-            $table->string('name');
-            $table->string('attack_bonus');
-            $table->string('damage');
-            $table->string('critical');
-            $table->string('range');
-            $table->string('type');
-            $table->integer('ammo');
+            $table->string('name')->default("Dagger");
+            $table->integer('attack_bonus')->default(0);
+            $table->string('damage')->default("1D4");
+            $table->string('critical')->default("19-20/x2");
+            $table->integer('range')->default(10);
+            $table->string('type')->default("Piercing/Slashing");
+            $table->integer('ammo')->default(0);
             $table->boolean('equipped')->default(0);
-            $table->string('notes');
+            $table->integer('order')->default(1);
+            $table->string('notes')->default("A short knife with a pointed and edged blade");
             $table->timestamps();
         });
 
@@ -214,16 +217,17 @@ class CreateTablesInitiate extends Migration
             $table->id();
             $table->bigInteger('character_id')->unsigned();
             $table->foreign('character_id')->references('id')->on('characters')->onDelete('cascade');
-            $table->string('name');
-            $table->integer('ac_bonus');
-            $table->integer('check_penalty');
-            $table->string('type');
-            $table->integer('max_dex');
-            $table->string('spell_failure');
-            $table->integer('speed');
-            $table->integer('weight');
+            $table->string('name')->default("Hide Armor");
+            $table->integer('ac_bonus')->default(3);
+            $table->integer('check_penalty')->default(-3);
+            $table->string('type')->default("Medium");
+            $table->integer('max_dex')->default(4);
+            $table->string('spell_failure')->default("20%");
+            $table->integer('speed')->default(20);
+            $table->integer('weight')->default(25);
             $table->boolean('equipped')->default(0);
-            $table->string('notes');
+            $table->integer('order')->default(1);
+            $table->string('notes')->default("Crude armor consisting of thick furs and pelts");
             $table->timestamps();
         });
     }

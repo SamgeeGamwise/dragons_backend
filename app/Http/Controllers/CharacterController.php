@@ -41,12 +41,12 @@ class CharacterController extends Controller
             return new CharacterResource(null);
         }
 
-        $note_section = (NoteSection::select('id', 'name')
+        $note_section = (NoteSection::select('id', 'name', 'order')
             ->where('character_id', '=', $id)
             ->get());
 
         foreach ($note_section as $section) {
-            $section->note = (Note::select('id', 'name', 'summary')
+            $section->note = (Note::select('id', 'name', 'summary', 'order')
                 ->where('note_sections_id', '=', $section['id'])
                 ->get());
         }
@@ -78,6 +78,7 @@ class CharacterController extends Controller
             'speed',
             'weight',
             'equipped',
+            'order',
             'notes'
         )
             ->where('character_id', '=', $id)
@@ -93,6 +94,7 @@ class CharacterController extends Controller
             'type',
             'ammo',
             'equipped',
+            'order',
             'notes'
         )
             ->where('character_id', '=', $id)
@@ -269,28 +271,6 @@ class CharacterController extends Controller
         return response()->json(compact('character'), 201);
     }
 
-    //  POST 
-    public function addSkill(Request $request)
-    {
-
-        $validator = Validator::make($request->all(), [
-            'character_id' => 'required|numeric|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-
-        CharacterSkill::create([
-            'character_id' => $request->get('character_id'),
-            'character_ability_id' => 1,
-            'name' => 'New Skill',
-            'order' => 0,
-        ]);
-
-        return response()->json(201);
-    }
-
     // PUT 
     public function updateAbilities(Request $request)
     {
@@ -318,49 +298,6 @@ class CharacterController extends Controller
                 ->update([
                     'score' => $ability['score'],
                     'temp_score' => $ability['temp_score'],
-                ]);
-        }
-
-        return response()->json(201);
-    }
-
-    public function updateSkills(Request $request)
-    {
-
-        $data = $request->all();
-
-        $validator = Validator::make($data['data'], [
-            '*.name' => 'required|string',
-            '*.ability_id' => 'required|numeric',
-            '*.rank_score' => 'required|numeric',
-            '*.misc_score' => 'required|numeric',
-            '*.class_skill' => 'required|boolean',
-            '*.untrained_skill' => 'required|boolean',
-            '*.order' => 'required|numeric',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-
-        $user = JWTAuth::parseToken()->authenticate();
-        $character = Character::whereId($data['character_id'])->where('user_id', '=', $user->id)->first();
-
-        if (!$character) {
-            return response()->json(['message' => 'Invalid Character!'], 401);
-        }
-
-        foreach ($data['data'] as $skill) {
-            CharacterSkill::whereId($skill['id'])
-                ->where('character_id', '=', $user->id)
-                ->update([
-                    'name' => $skill['name'],
-                    'character_ability_id' => $skill['ability_id'],
-                    'rank_score' => $skill['rank_score'],
-                    'misc_score' => $skill['misc_score'],
-                    'class_skill' => $skill['class_skill'],
-                    'untrained_skill' => $skill['untrained_skill'],
-                    'order' => $skill['order'],
                 ]);
         }
 
@@ -457,30 +394,4 @@ class CharacterController extends Controller
 
     // DELETE
 
-    public function deleteSkills(Request $request)
-    {
-        $data = $request->all();
-
-        $validator = Validator::make($data, [
-            'character_id' => 'required|numeric',
-            'skill_id' => 'required|numeric',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-
-        $user = JWTAuth::parseToken()->authenticate();
-        $character = Character::whereId($data['character_id'])->where('user_id', '=', $user->id)->first();
-
-        if (!$character) {
-            return response()->json(['message' => 'Invalid Character!'], 401);
-        }
-
-        CharacterSkill::whereId($data['skill_id'])
-            ->where('character_id', '=', $user->id)
-            ->delete();
-
-        return response()->json(201);
-    }
 }

@@ -15,10 +15,12 @@ class NoteSectionSeeder extends Seeder
     {
         DB::table('note_sections')->insert([[
             'character_id' => 1,
+            'name' => 'Money',
             'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
             'updated_at' => Carbon::now()->format('Y-m-d H:i:s')
-        ],[
+        ], [
             'character_id' => 1,
+            'name' => 'Backpack',
             'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
             'updated_at' => Carbon::now()->format('Y-m-d H:i:s')
         ],]);

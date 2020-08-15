@@ -49,14 +49,28 @@ Route::group([
     Route::get('/{id}', 'CharacterController@getById');
 
     Route::post('/', 'CharacterController@create');
-    Route::post('/skills', 'CharacterController@addSkill');
 
     Route::put('/abilities', 'CharacterController@updateAbilities');
-    Route::put('/skills', 'CharacterController@updateSkills');
     Route::put('/summary', 'CharacterController@updateSummary');
     Route::put('/saving-throws', 'CharacterController@updateSavingThrows');
 
-    Route::delete('/skills', 'CharacterController@deleteSkills');
+    Route::post('/skills', 'SkillController@addSkill');
+    Route::put('/skills', 'SkillController@updateSkills');
+    Route::delete('/skills', 'SkillController@deleteSkills');
+
+    Route::post('/weapons', 'WeaponController@addWeapon');
+    Route::put('/weapons', 'WeaponController@updateWeapon');
+    Route::delete('/weapons', 'WeaponController@deleteWeapon');
+
+    Route::post('/armor', 'ArmorController@addArmor');
+    Route::put('/armor', 'ArmorController@updateArmor');
+    Route::delete('/armor', 'ArmorController@deleteArmor');
+
+    Route::post('/notes/section', 'NoteController@addSection');
+    Route::post('/notes/note', 'NoteController@addNote');
+    Route::put('/notes', 'NoteController@updateNoteAndSection');
+    Route::delete('/notes/section', 'NoteController@deleteSection');
+    Route::delete('/notes/note', 'NoteController@deleteNote');
 });
 
 Route::group([

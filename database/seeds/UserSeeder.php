@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
             'id' => 1,
             'first_name' => 'Samuel',
             'last_name' => 'Krohn',
-            'email' => 'hi@me.com',
+            'email' => 'sk.n8594@yahoo.com',
             'password' => '$2y$12$6UgEuoYa7VOyxqUEQrKd1e3gb68CHzHgWeQydXIAvv95ZtZDf33C.',
             'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
             'updated_at' => Carbon::now()->format('Y-m-d H:i:s')
