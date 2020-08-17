@@ -63,4 +63,49 @@ class UserController extends Controller
 
         return response()->json(compact('access_token'), 201);
     }
+
+    // PUT
+    public function updateProfile(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+        ]);
+
+        $user = JWTAuth::parseToken()->authenticate();
+
+        if ($validator->fails() && $user->email !== $request->get('email')) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+        User::whereId($user->id)->update([
+            'first_name' => $request->get('first_name'),
+            'last_name' => $request->get('last_name'),
+            'email' => $request->get('email'),
+        ]);
+
+        return response()->json(201);
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|string|min:6',
+            'password_confirmation' => 'required|string|same:password',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+        $user = JWTAuth::parseToken()->authenticate();
+
+        User::whereId($user->id)->update([
+            'password' => Hash::make($request->get('password')),
+        ]);
+
+        return response()->json(201);
+    }
 }

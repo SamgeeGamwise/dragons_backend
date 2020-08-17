@@ -29,6 +29,8 @@ Route::group([
         'middleware' => ['jwt.verify'],
     ], function () {
         Route::get('/', 'UserController@profile');
+        Route::put('password', 'UserController@updatePassword');
+        Route::put('profile', 'UserController@updateProfile');
     });
 });
 
