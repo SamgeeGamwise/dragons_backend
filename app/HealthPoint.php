@@ -11,5 +11,6 @@ class HealthPoint extends Model
         'total_hp',
         'damage',
         'non_lethal',
+        'temp_hp'
     ];
 }

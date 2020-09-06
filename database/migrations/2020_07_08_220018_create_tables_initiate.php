@@ -35,7 +35,6 @@ class CreateTablesInitiate extends Migration
             $table->string('alignment')->default("True Neutral");
             $table->string('size')->default("Medium");
             $table->string('gender');
-            $table->string('base_attack')->default('0');
             $table->integer('speed')->default(30);
             $table->timestamps();
         });
@@ -129,13 +128,23 @@ class CreateTablesInitiate extends Migration
             $table->timestamps();
         });
 
+        Schema::create('base_attacks', function (Blueprint $table) {
+            $table->id();
+            $table->bigInteger('character_id')->unsigned();
+            $table->foreign('character_id')->references('id')->on('characters')->onDelete('cascade');
+            $table->integer('base_bonus')->default(0);
+            $table->integer('second_bonus')->nullable();
+            $table->integer('third_bonus')->nullable();
+            $table->integer('fourth_bonus')->nullable();
+            $table->timestamps();
+        });
+
         Schema::create('grapples', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('character_id')->unsigned();
             $table->foreign('character_id')->references('id')->on('characters')->onDelete('cascade');
             $table->bigInteger('character_ability_id')->unsigned();
             $table->foreign('character_ability_id')->references('id')->on('character_abilities');
-            $table->integer('base_bonus')->default(0);
             $table->integer('size_bonus')->default(0);
             $table->integer('misc_bonus')->default(0);
             $table->timestamps();
@@ -148,6 +157,7 @@ class CreateTablesInitiate extends Migration
             $table->integer('total_hp')->default(0);
             $table->integer('damage')->default(0);
             $table->integer('non_lethal')->default(0);
+            $table->integer('temp_hp')->default(0);
             $table->timestamps();
         });
 
@@ -260,6 +270,8 @@ class CreateTablesInitiate extends Migration
         Schema::dropIfExists('character_skills');
 
         Schema::dropIfExists('armor_classes');
+
+        Schema::dropIfExists('base_attacks');
 
         Schema::dropIfExists('grapples');
 

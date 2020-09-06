@@ -12,6 +12,7 @@ use App\CharacterAbility;
 use App\CharacterSavingThrow;
 use App\CharacterSkill;
 use App\Grapple;
+use App\BaseAttack;
 use App\HealthPoint;
 use App\Initiative;
 use App\Note;
@@ -113,11 +114,19 @@ class CharacterController extends Controller
             ->where('armor_classes.character_id', '=', $id)
             ->get());
 
+
+        $character->base_attacks = (BaseAttack::select(
+            'id',
+            'base_bonus',
+            'second_bonus',
+            'third_bonus',
+            'fourth_bonus',
+        )->get());
+
         $character->grapple = (Grapple::select(
             'grapples.id',
             'character_abilities.score',
             'character_abilities.temp_score',
-            'grapples.base_bonus',
             'grapples.size_bonus',
             'grapples.misc_bonus',
         )
@@ -129,7 +138,8 @@ class CharacterController extends Controller
             'id',
             'total_hp',
             'damage',
-            'non_lethal'
+            'non_lethal',
+            'temp_hp'
         )
             ->where('character_id', '=', $id)
             ->get());
@@ -388,6 +398,173 @@ class CharacterController extends Controller
                     'temp_score' => $savingThrow['temp_score'],
                 ]);
         }
+
+        return response()->json(201);
+    }
+
+    public function updateHP(Request $request)
+    {
+        $characterId = $request->all()['character_id'];
+        $healthPoints = $request->all()['data'];
+
+        $validator = Validator::make($healthPoints, [
+            'damage' => 'required|numeric',
+            'non_lethal' => 'required|numeric',
+            'temp_hp' => 'required|numeric',
+            'total_hp' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+        $user = JWTAuth::parseToken()->authenticate();
+        $character = Character::whereId($characterId)->where('user_id', '=', $user->id)->first();
+
+        if (!$character) {
+            return response()->json(['message' => 'Invalid Character!'], 401);
+        }
+
+        HealthPoint::whereId($healthPoints['id'])
+            ->where('character_id', '=', $characterId)
+            ->update([
+                'damage' => $healthPoints['damage'],
+                'non_lethal' => $healthPoints['non_lethal'],
+                'temp_hp' => $healthPoints['temp_hp'],
+                'total_hp' => $healthPoints['total_hp'],
+            ]);
+
+        return response()->json(201);
+    }
+
+    public function updateAC(Request $request)
+    {
+        $characterId = $request->all()['character_id'];
+        $armorClass = $request->all()['data'];
+
+        $validator = Validator::make($armorClass, [
+            'armor_bonus' => 'required|numeric',
+            'natural_bonus' => 'required|numeric',
+            'size_bonus' => 'required|numeric',
+            'misc_bonus' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+        $user = JWTAuth::parseToken()->authenticate();
+        $character = Character::whereId($characterId)->where('user_id', '=', $user->id)->first();
+
+        if (!$character) {
+            return response()->json(['message' => 'Invalid Character!'], 401);
+        }
+
+        ArmorClass::whereId($armorClass['id'])
+            ->where('character_id', '=', $characterId)
+            ->update([
+                'armor_bonus' => $armorClass['armor_bonus'],
+                'natural_bonus' => $armorClass['natural_bonus'],
+                'size_bonus' => $armorClass['size_bonus'],
+                'misc_bonus' => $armorClass['misc_bonus'],
+            ]);
+
+        return response()->json(201);
+    }
+
+    public function updateGrapple(Request $request)
+    {
+        $characterId = $request->all()['character_id'];
+        $grapple = $request->all()['data'];
+
+        $validator = Validator::make($grapple, [
+            'base_bonus' => 'required|numeric',
+            'size_bonus' => 'required|numeric',
+            'misc_bonus' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+        $user = JWTAuth::parseToken()->authenticate();
+        $character = Character::whereId($characterId)->where('user_id', '=', $user->id)->first();
+
+        if (!$character) {
+            return response()->json(['message' => 'Invalid Character!'], 401);
+        }
+
+        Grapple::whereId($grapple['id'])
+            ->where('character_id', '=', $characterId)
+            ->update([
+                'base_bonus' => $grapple['base_bonus'],
+                'size_bonus' => $grapple['size_bonus'],
+                'misc_bonus' => $grapple['misc_bonus'],
+            ]);
+
+        return response()->json(201);
+    }
+
+    public function updateBaseAttack(Request $request)
+    {
+        $characterId = $request->all()['character_id'];
+        $baseAttack = $request->all()['data'];
+
+        $validator = Validator::make($baseAttack, [
+            'base_bonus' => 'required|numeric',
+            'second_bonus' => 'numeric',
+            'third_bonus' => 'numeric',
+            'fourth_bonus' => 'numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+        $user = JWTAuth::parseToken()->authenticate();
+        $character = Character::whereId($characterId)->where('user_id', '=', $user->id)->first();
+
+        if (!$character) {
+            return response()->json(['message' => 'Invalid Character!'], 401);
+        }
+
+        BaseAttack::whereId($baseAttack['id'])
+            ->where('character_id', '=', $characterId)
+            ->update([
+                'base_bonus' => $baseAttack['base_bonus'],
+                'second_bonus' => $baseAttack['second_bonus'],
+                'third_bonus' => $baseAttack['third_bonus'],
+                'fourth_bonus' => $baseAttack['fourth_bonus'],
+            ]);
+
+        return response()->json(201);
+    }
+
+    public function updateInitiative(Request $request)
+    {
+        $characterId = $request->all()['character_id'];
+        $initiative = $request->all()['data'];
+
+        $validator = Validator::make($initiative, [
+            'misc_bonus' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+        $user = JWTAuth::parseToken()->authenticate();
+        $character = Character::whereId($characterId)->where('user_id', '=', $user->id)->first();
+
+        if (!$character) {
+            return response()->json(['message' => 'Invalid Character!'], 401);
+        }
+
+        Initiative::whereId($initiative['id'])
+            ->where('character_id', '=', $characterId)
+            ->update([
+                'misc_bonus' => $initiative['misc_bonus'],
+            ]);
 
         return response()->json(201);
     }

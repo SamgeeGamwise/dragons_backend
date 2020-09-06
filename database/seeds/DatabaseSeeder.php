@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CharacterSavingThrowSeeder::class);
         $this->call(CharacterSkillSeeder::class);
         $this->call(GrappleSeeder::class);
+        $this->call(BaseAttackSeeder::class);
         $this->call(HealthPointSeeder::class);
         $this->call(InitiativeSeeder::class);
         $this->call(NoteSectionSeeder::class);

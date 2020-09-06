@@ -54,6 +54,11 @@ Route::group([
 
     Route::put('/abilities', 'CharacterController@updateAbilities');
     Route::put('/summary', 'CharacterController@updateSummary');
+    Route::put('/summary/hp', 'CharacterController@updateHP');
+    Route::put('/summary/ac', 'CharacterController@updateAC');
+    Route::put('/summary/base-attack', 'CharacterController@updateBaseAttack');
+    Route::put('/summary/grapple', 'CharacterController@updateGrapple');
+    Route::put('/summary/initiative', 'CharacterController@updateInitiative');
     Route::put('/saving-throws', 'CharacterController@updateSavingThrows');
 
     Route::post('/skills', 'SkillController@addSkill');
