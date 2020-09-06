@@ -264,6 +264,10 @@ class CharacterController extends Controller
             'character_ability_id' =>  $dex->id,
         ]);
 
+        BaseAttack::create([
+            'character_id' => $character->id,
+        ]);
+
         Grapple::create([
             'character_id' => $character->id,
             'character_ability_id' =>  $str->id,
