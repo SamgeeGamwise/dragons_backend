@@ -121,7 +121,7 @@ class CharacterController extends Controller
             'second_bonus',
             'third_bonus',
             'fourth_bonus',
-        )->get());
+        )->where('character_id', '=', $id)->get());
 
         $character->grapple = (Grapple::select(
             'grapples.id',
@@ -242,8 +242,8 @@ class CharacterController extends Controller
 
         foreach ($saving_throws as $saving_throw) {
             CharacterSavingThrow::create([
+                'name' => $saving_throw->name,
                 'character_id' => $character->id,
-                'saving_throw_id' => $saving_throw->id,
                 'character_ability_id' => $saving_throw->ability_id,
             ]);
         }
@@ -480,7 +480,6 @@ class CharacterController extends Controller
         $grapple = $request->all()['data'];
 
         $validator = Validator::make($grapple, [
-            'base_bonus' => 'required|numeric',
             'size_bonus' => 'required|numeric',
             'misc_bonus' => 'required|numeric',
         ]);
@@ -499,7 +498,6 @@ class CharacterController extends Controller
         Grapple::whereId($grapple['id'])
             ->where('character_id', '=', $characterId)
             ->update([
-                'base_bonus' => $grapple['base_bonus'],
                 'size_bonus' => $grapple['size_bonus'],
                 'misc_bonus' => $grapple['misc_bonus'],
             ]);
