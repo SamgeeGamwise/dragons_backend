@@ -512,9 +512,9 @@ class CharacterController extends Controller
 
         $validator = Validator::make($baseAttack, [
             'base_bonus' => 'required|numeric',
-            'second_bonus' => 'numeric',
-            'third_bonus' => 'numeric',
-            'fourth_bonus' => 'numeric',
+            'second_bonus' => 'numeric|nullable',
+            'third_bonus' => 'numeric|nullable',
+            'fourth_bonus' => 'numeric|nullable',
         ]);
 
         if ($validator->fails()) {
