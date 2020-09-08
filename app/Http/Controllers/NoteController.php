@@ -96,7 +96,6 @@ class NoteController extends Controller
     // PUT
     public function updateNoteAndSection(Request $request)
     {
-
         $data = $request->all();
 
         $validator = Validator::make($data['data'], [
