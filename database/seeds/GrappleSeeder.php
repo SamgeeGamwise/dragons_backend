@@ -14,7 +14,7 @@ class GrappleSeeder extends Seeder
      */
     public function run()
     {
-        $character_ability_id = CharacterAbility::select('id')->where('ability_id', '=', 1)->first();
+        $character_ability_id = CharacterAbility::select('id')->where('ability_id', '=', 1)->where('character_id', '=', 1)->first();
 
         DB::table('grapples')->insert([[
             'character_id' => 1,

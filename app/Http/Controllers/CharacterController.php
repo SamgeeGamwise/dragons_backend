@@ -64,8 +64,11 @@ class CharacterController extends Controller
             'character_saving_throws.misc_score',
             'character_saving_throws.temp_score'
         )
-            ->join('character_abilities', 'character_abilities.id', '=', 'character_saving_throws.character_ability_id')
+            ->join('characters', 'characters.id', '=', 'character_saving_throws.character_id')
+            ->join('character_abilities', 'character_abilities.character_id', '=', 'characters.id')
+            ->join('abilities', 'abilities.id', '=', 'character_abilities.ability_id')
             ->where('character_saving_throws.character_id', '=', $id)
+            ->whereColumn('character_saving_throws.character_ability_id', '=', 'abilities.id')
             ->get());
 
         $character->armor = (Armor::select(
@@ -110,8 +113,11 @@ class CharacterController extends Controller
             'armor_classes.natural_bonus',
             'armor_classes.misc_bonus'
         )
-            ->join('character_abilities', 'character_abilities.id', '=', 'armor_classes.character_ability_id')
+            ->join('characters', 'characters.id', '=', 'armor_classes.character_id')
+            ->join('character_abilities', 'character_abilities.character_id', '=', 'characters.id')
+            ->join('abilities', 'abilities.id', '=', 'character_abilities.ability_id')
             ->where('armor_classes.character_id', '=', $id)
+            ->whereColumn('armor_classes.character_ability_id', '=', 'abilities.id')
             ->get());
 
 
@@ -130,8 +136,11 @@ class CharacterController extends Controller
             'grapples.size_bonus',
             'grapples.misc_bonus',
         )
-            ->join('character_abilities', 'character_abilities.id', '=', 'grapples.character_ability_id')
+            ->join('characters', 'characters.id', '=', 'grapples.character_id')
+            ->join('character_abilities', 'character_abilities.character_id', '=', 'characters.id')
+            ->join('abilities', 'abilities.id', '=', 'character_abilities.ability_id')
             ->where('grapples.character_id', '=', $id)
+            ->whereColumn('grapples.character_ability_id', '=', 'abilities.id')
             ->get());
 
         $character->health_points = (HealthPoint::select(
@@ -150,8 +159,11 @@ class CharacterController extends Controller
             'character_abilities.temp_score',
             'initiatives.misc_bonus'
         )
-            ->join('character_abilities', 'character_abilities.id', '=', 'initiatives.character_ability_id')
+            ->join('characters', 'characters.id', '=', 'initiatives.character_id')
+            ->join('character_abilities', 'character_abilities.character_id', '=', 'characters.id')
+            ->join('abilities', 'abilities.id', '=', 'character_abilities.ability_id')
             ->where('initiatives.character_id', '=', $id)
+            ->whereColumn('initiatives.character_ability_id', '=', 'abilities.id')
             ->get());
 
         $character->skills = (CharacterSkill::select(
@@ -167,9 +179,11 @@ class CharacterController extends Controller
             'character_skills.class_skill',
             'character_skills.untrained_skill'
         )
-            ->join('character_abilities', 'character_abilities.id', '=', 'character_skills.character_ability_id')
+            ->join('characters', 'characters.id', '=', 'character_skills.character_id')
+            ->join('character_abilities', 'character_abilities.character_id', '=', 'characters.id')
             ->join('abilities', 'abilities.id', '=', 'character_abilities.ability_id')
             ->where('character_skills.character_id', '=', $id)
+            ->whereColumn('character_skills.character_ability_id', '=', 'abilities.id')
             ->orderBy('character_skills.order', 'ASC')
             ->orderBy('character_skills.name', 'ASC')
             ->get());
@@ -228,15 +242,24 @@ class CharacterController extends Controller
 
         $abilities = Ability::select()->get();
 
-        $dex = Ability::select()->where('code', '=', 'DEX')->first();
-        $str = Ability::select()->where('code', '=', 'STR')->first();
-
         foreach ($abilities as $ability) {
             CharacterAbility::create([
                 'character_id' => $character->id,
                 'ability_id' => $ability->id,
             ]);
         }
+
+        $dex = CharacterAbility::select()
+            ->join('abilities', 'abilities.id', '=', 'character_abilities.ability_id')
+            ->where('abilities.code', '=', 'DEX')
+            ->where('character_abilities.character_id', '=', $character->id)
+            ->first();
+
+        $str = CharacterAbility::select()
+            ->join('abilities', 'abilities.id', '=', 'character_abilities.ability_id')
+            ->where('abilities.code', '=', 'STR')
+            ->where('character_abilities.character_id', '=', $character->id)
+            ->first();
 
         $saving_throws = SavingThrow::select()->get();
 

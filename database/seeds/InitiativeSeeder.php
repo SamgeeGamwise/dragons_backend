@@ -15,7 +15,7 @@ class InitiativeSeeder extends Seeder
      */
     public function run()
     {
-        $character_ability_id = CharacterAbility::select('id')->where('ability_id', '=', 2)->first();
+        $character_ability_id = CharacterAbility::select('id')->where('ability_id', '=', 2)->where('character_id', '=', 1)->first();
 
         DB::table('initiatives')->insert([[
             'character_id' => 1,
