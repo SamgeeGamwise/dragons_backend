@@ -59,6 +59,7 @@ class NoteController extends Controller
 
         Note::create([
             'note_sections_id' => $request->get('section_id'),
+            'summary' => 'Note Summary',
         ]);
 
         return response()->json(201);
@@ -88,6 +89,7 @@ class NoteController extends Controller
 
         Note::create([
             'note_sections_id' => $section->id,
+            'summary' => 'Note Summary',
         ]);
 
         return response()->json(201);

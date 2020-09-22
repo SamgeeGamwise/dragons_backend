@@ -185,7 +185,7 @@ class CreateTablesInitiate extends Migration
             $table->bigInteger('note_sections_id')->unsigned();
             $table->foreign('note_sections_id')->references('id')->on('note_sections')->onDelete('cascade');
             $table->string('name')->default('Note Name');
-            $table->string('summary')->default('Note Summary');
+            $table->mediumText('summary');
             $table->integer('order')->default(1);
             $table->timestamps();
         });
@@ -201,7 +201,7 @@ class CreateTablesInitiate extends Migration
             $table->string('range');
             $table->string('saving_throw');
             $table->string('spell_resistance');
-            $table->string('summary');
+            $table->mediumText('summary');
             $table->string('target');
             $table->timestamps();
         });
@@ -219,7 +219,7 @@ class CreateTablesInitiate extends Migration
             $table->integer('ammo')->default(0);
             $table->boolean('equipped')->default(0);
             $table->integer('order')->default(1);
-            $table->string('notes')->default("A short knife with a pointed and edged blade");
+            $table->mediumText('notes');
             $table->timestamps();
         });
 
@@ -237,7 +237,7 @@ class CreateTablesInitiate extends Migration
             $table->integer('weight')->default(25);
             $table->boolean('equipped')->default(0);
             $table->integer('order')->default(1);
-            $table->string('notes')->default("Crude armor consisting of thick furs and pelts");
+            $table->mediumText('notes');
             $table->timestamps();
         });
     }

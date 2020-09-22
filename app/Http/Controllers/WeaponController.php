@@ -44,6 +44,7 @@ class WeaponController extends Controller
 
         Weapon::create([
             'character_id' => $request->get('character_id'),
+            'notes' => 'A short knife with a pointed and edged blade.',
         ]);
 
         return response()->json(201);

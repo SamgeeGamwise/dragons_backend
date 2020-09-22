@@ -44,11 +44,15 @@ class CharacterController extends Controller
 
         $note_section = (NoteSection::select('id', 'name', 'order')
             ->where('character_id', '=', $id)
+            ->orderBy('order', 'ASC')
+            ->orderBy('name', 'ASC')
             ->get());
 
         foreach ($note_section as $section) {
             $section->note = (Note::select('id', 'name', 'summary', 'order')
                 ->where('note_sections_id', '=', $section['id'])
+                ->orderBy('order', 'ASC')
+                ->orderBy('name', 'ASC')
                 ->get());
         }
 
@@ -86,6 +90,8 @@ class CharacterController extends Controller
             'notes'
         )
             ->where('character_id', '=', $id)
+            ->orderBy('order', 'ASC')
+            ->orderBy('name', 'ASC')
             ->get());
 
         $character->weapons = (Weapon::select(
@@ -102,6 +108,8 @@ class CharacterController extends Controller
             'notes'
         )
             ->where('character_id', '=', $id)
+            ->orderBy('order', 'ASC')
+            ->orderBy('name', 'ASC')
             ->get());
 
         $character->armor_class = (ArmorClass::select(

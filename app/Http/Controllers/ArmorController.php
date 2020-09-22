@@ -43,6 +43,7 @@ class ArmorController extends Controller
 
         Armor::create([
             'character_id' => $request->get('character_id'),
+            'notes' => 'Crude armor consisting of thick furs and pelts.',
         ]);
 
         return response()->json(201);
