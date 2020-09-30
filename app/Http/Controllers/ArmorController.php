@@ -2,28 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Ability;
 use App\Armor;
-use App\ArmorClass;
-use App\Campaign;
-use App\CampaignCharacter;
 use App\Character;
-use App\CharacterAbility;
-use App\CharacterSavingThrow;
-use App\CharacterSkill;
-use App\Grapple;
-use App\HealthPoint;
-use App\Initiative;
-use App\Note;
-use App\NoteSection;
-use App\SavingThrow;
-use App\Skill;
-use App\Spell;
-use App\User;
-use App\Weapon;
 
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\Character as CharacterResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;

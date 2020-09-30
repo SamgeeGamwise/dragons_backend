@@ -56,6 +56,8 @@ class CreateTablesInitiate extends Migration
             $table->string('name');
             $table->string('code');
             $table->timestamps();
+
+            $table->index('code');
         });
 
         Schema::create('character_abilities', function (Blueprint $table) {
@@ -113,6 +115,8 @@ class CreateTablesInitiate extends Migration
             $table->boolean('class_skill')->default(false);
             $table->boolean('untrained_skill')->default(false);
             $table->timestamps();
+
+            $table->index('order');
         });
 
         Schema::create('armor_classes', function (Blueprint $table) {
@@ -178,6 +182,8 @@ class CreateTablesInitiate extends Migration
             $table->string('name')->default('Section Name');
             $table->integer('order')->default(1);
             $table->timestamps();
+
+            $table->index('order');
         });
 
         Schema::create('notes', function (Blueprint $table) {
@@ -185,25 +191,43 @@ class CreateTablesInitiate extends Migration
             $table->bigInteger('note_sections_id')->unsigned();
             $table->foreign('note_sections_id')->references('id')->on('note_sections')->onDelete('cascade');
             $table->string('name')->default('Note Name');
-            $table->mediumText('summary');
+            $table->text('summary');
             $table->integer('order')->default(1);
             $table->timestamps();
+
+            $table->index('order');
         });
 
         Schema::create('spells', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('area');
-            $table->string('casting_time');
-            $table->string('components');
-            $table->string('duration');
-            $table->integer('level');
-            $table->string('range');
-            $table->string('saving_throw');
-            $table->string('spell_resistance');
-            $table->mediumText('summary');
-            $table->string('target');
+            $table->string('school_of_magic')->nullable();
+            $table->string('area')->nullable();
+            $table->string('casting_time')->nullable();
+            $table->string('components')->nullable();
+            $table->string('duration')->nullable();
+            $table->string('effect')->nullable();
+            $table->string('range')->nullable();
+            $table->string('saving_throw')->nullable();
+            $table->string('spell_resistance')->nullable();
+            $table->text('summary')->nullable();
+            $table->string('target')->nullable();
             $table->timestamps();
+
+            $table->index('name');
+            $table->index('school_of_magic');
+        });
+
+        Schema::create('spell_levels', function (Blueprint $table) {
+            $table->id();
+            $table->bigInteger('spells_id')->unsigned();
+            $table->foreign('spells_id')->references('id')->on('spells')->onDelete('cascade');
+            $table->integer('level');
+            $table->string('class');
+            $table->timestamps();
+
+            $table->index('level');
+            $table->index('class');
         });
 
         Schema::create('weapons', function (Blueprint $table) {
@@ -219,7 +243,7 @@ class CreateTablesInitiate extends Migration
             $table->integer('ammo')->default(0);
             $table->boolean('equipped')->default(0);
             $table->integer('order')->default(1);
-            $table->mediumText('notes');
+            $table->text('notes');
             $table->timestamps();
         });
 
@@ -237,7 +261,7 @@ class CreateTablesInitiate extends Migration
             $table->integer('weight')->default(25);
             $table->boolean('equipped')->default(0);
             $table->integer('order')->default(1);
-            $table->mediumText('notes');
+            $table->text('notes');
             $table->timestamps();
         });
     }
@@ -284,6 +308,8 @@ class CreateTablesInitiate extends Migration
         Schema::dropIfExists('notes');
 
         Schema::dropIfExists('spells');
+
+        Schema::dropIfExists('spell_levels');
 
         Schema::dropIfExists('weapons');
 

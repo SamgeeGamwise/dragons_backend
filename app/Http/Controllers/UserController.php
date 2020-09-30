@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -14,11 +15,15 @@ use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
 class UserController extends Controller
 {
-    // GET
+    /**
+     * Show the profile for the given user.
+     *
+     * @param
+     * @return JsonResponse
+     */
     public function profile()
     {
         try {
-
             if (!$user = JWTAuth::parseToken()->authenticate()) {
                 return response()->json(['user_not_found'], 404);
             }
@@ -36,7 +41,12 @@ class UserController extends Controller
         return response()->json(compact('user'));
     }
 
-    // POST
+    /**
+     * Create new user profile
+     *
+     * @param Request  $request
+     * @return JsonResponse
+     */
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -64,7 +74,12 @@ class UserController extends Controller
         return response()->json(compact('access_token'), 201);
     }
 
-    // PUT
+    /**
+     * Updates user profile
+     *
+     * @param Request  $request
+     * @return JsonResponse
+     */
     public function updateProfile(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -88,6 +103,12 @@ class UserController extends Controller
         return response()->json(201);
     }
 
+    /**
+     * Updates user password
+     *
+     * @param Request  $request
+     * @return JsonResponse
+     */
     public function updatePassword(Request $request)
     {
         $validator = Validator::make($request->all(), [

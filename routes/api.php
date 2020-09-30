@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,15 +13,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/test', function () {
-    return response()->json(['message' => 'Invalid Character!'], 401);
-});
-
-
 Route::group([
     'middleware' =>  ['api'],
     'prefix' => 'user'
-], function ($router) {
+], function () {
     Route::post('register', 'UserController@register');
 
     Route::group([
@@ -41,6 +35,14 @@ Route::group([
     Route::post('login', 'AuthController@login');
     Route::post('logout', 'AuthController@logout');
     Route::post('refresh', 'AuthController@refresh');
+});
+
+Route::group([
+    'middleware' => ['api'],
+    'prefix' => 'spells'
+], function () {
+    Route::get('/', 'SpellsController@search');
+    Route::post('/', 'SpellsController@addSpell');
 });
 
 Route::group([

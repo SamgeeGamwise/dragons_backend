@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Ability;
 use App\Armor;
 use App\ArmorClass;
-use App\Campaign;
-use App\CampaignCharacter;
 use App\Character;
 use App\CharacterAbility;
 use App\CharacterSavingThrow;
@@ -19,11 +17,8 @@ use App\Note;
 use App\NoteSection;
 use App\SavingThrow;
 use App\Skill;
-use App\Spell;
-use App\User;
 use App\Weapon;
 
-use Illuminate\Support\Facades\DB;
 use App\Http\Resources\Character as CharacterResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -31,7 +26,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CharacterController extends Controller
 {
-    //  GET 
+    //  GET
     public function getById($id)
     {
         $user = JWTAuth::parseToken()->authenticate();
@@ -134,7 +129,7 @@ class CharacterController extends Controller
             'base_bonus',
             'second_bonus',
             'third_bonus',
-            'fourth_bonus',
+            'fourth_bonus'
         )->where('character_id', '=', $id)->get());
 
         $character->grapple = (Grapple::select(
@@ -142,7 +137,7 @@ class CharacterController extends Controller
             'character_abilities.score',
             'character_abilities.temp_score',
             'grapples.size_bonus',
-            'grapples.misc_bonus',
+            'grapples.misc_bonus'
         )
             ->join('characters', 'characters.id', '=', 'grapples.character_id')
             ->join('character_abilities', 'character_abilities.character_id', '=', 'characters.id')
@@ -200,7 +195,7 @@ class CharacterController extends Controller
             'character_abilities.id',
             'abilities.name',
             'character_abilities.score',
-            'character_abilities.temp_score',
+            'character_abilities.temp_score'
         )
             ->join('abilities', 'abilities.id', '=', 'character_abilities.ability_id')
             ->where('character_abilities.character_id', '=', $id)
@@ -222,7 +217,7 @@ class CharacterController extends Controller
         return  new CharacterResource($characters);
     }
 
-    //  POST 
+    //  POST
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -316,7 +311,7 @@ class CharacterController extends Controller
         return response()->json(compact('character'), 201);
     }
 
-    // PUT 
+    // PUT
     public function updateAbilities(Request $request)
     {
         $data = $request->all();
