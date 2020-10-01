@@ -72,6 +72,7 @@ class SpellsController extends Controller
             'casting_time' => 'string|max:255|nullable',
             'components' => 'string|max:255|nullable',
             'duration' => 'string|max:255|nullable',
+            'levels' => 'required',
             'levels.*.level' => 'numeric|max:255|nullable',
             'levels.*.class' => 'string|max:255|nullable',
             'effect' => 'string|max:255|nullable',
