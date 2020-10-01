@@ -46,8 +46,8 @@ class SpellsController extends Controller
 
         if (isset($level))
             $query->where('spell_levels.level', '=', $level);
-
         $query->groupBy('spells.id');
+        $query->orderBy('spells.name', 'ASC');
 
         $spells = $query->get();
 
