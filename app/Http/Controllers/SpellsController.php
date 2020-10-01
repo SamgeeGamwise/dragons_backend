@@ -66,7 +66,7 @@ class SpellsController extends Controller
     public function addSpell(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|unique:spells|max:255',
             'school_of_magic' => 'string|max:255|nullable',
             'area' => 'string|max:255|nullable',
             'casting_time' => 'string|max:255|nullable',
