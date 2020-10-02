@@ -375,7 +375,7 @@ class CharacterController extends Controller
             return response()->json(['message' => 'Invalid Character!'], 401);
         }
 
-        Character::whereId($user->id)
+        Character::whereId($character->id)
             ->update([
                 'name' => $data['data']['name'],
                 'race' => $data['data']['race'],

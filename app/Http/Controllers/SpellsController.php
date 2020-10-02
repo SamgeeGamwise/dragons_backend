@@ -19,6 +19,9 @@ class SpellsController extends Controller
         $class = $request->query("class");
         $level = $request->query("level");
 
+        if (!isset($search) && !isset($school) && !isset($class) && !isset($level))
+            return response()->json(400);
+
         $query = Spell::select(
             'spells.id',
             'spells.name',
@@ -48,6 +51,7 @@ class SpellsController extends Controller
             $query->where('spell_levels.level', '=', $level);
         $query->groupBy('spells.id');
         $query->orderBy('spells.name', 'ASC');
+        $query->limit(100);
 
         $spells = $query->get();
 
