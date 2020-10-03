@@ -45,7 +45,6 @@ class ArmorController extends Controller
             '*.speed' => 'required|numeric',
             '*.weight' => 'required|numeric',
             '*.equipped' => 'required|boolean',
-            '*.order' => 'required|numeric',
             '*.notes' => 'required|string'
         ]);
 
@@ -60,7 +59,7 @@ class ArmorController extends Controller
             return response()->json(['message' => 'Invalid Character!'], 401);
         }
 
-        foreach ($data['data'] as $armor) {
+        foreach ($data['data'] as $index=>$armor) {
             Armor::whereId($armor['id'])
                 ->where('character_id', '=', $character->id)
                 ->update([
@@ -73,7 +72,7 @@ class ArmorController extends Controller
                     'speed' => $armor['speed'],
                     'weight' => $armor['weight'],
                     'equipped' => $armor['equipped'],
-                    'order' => $armor['order'],
+                    'order' => $index,
                     'notes' => $armor['notes'],
                 ]);
         }

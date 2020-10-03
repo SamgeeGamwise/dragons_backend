@@ -334,7 +334,7 @@ class CharacterController extends Controller
 
         foreach ($data['data'] as $ability) {
             CharacterAbility::whereId($ability['id'])
-                ->where('character_id', '=', $data['character_id'])
+                ->where('character_id', '=', $character->id)
                 ->update([
                     'score' => $ability['score'],
                     'temp_score' => $ability['temp_score'],

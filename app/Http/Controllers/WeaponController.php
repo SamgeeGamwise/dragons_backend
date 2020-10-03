@@ -58,7 +58,6 @@ class WeaponController extends Controller
             '*.type' => 'required|string',
             '*.ammo' => 'required|numeric',
             '*.equipped' => 'required|boolean',
-            '*.order' => 'required|numeric',
             '*.notes' => 'required|string',
         ]);
 
@@ -73,7 +72,7 @@ class WeaponController extends Controller
             return response()->json(['message' => 'Invalid Character!'], 401);
         }
 
-        foreach ($data['data'] as $weapon) {
+        foreach ($data['data'] as $index=>$weapon) {
             Weapon::whereId($weapon['id'])
                 ->where('character_id', '=', $character->id)
                 ->update([
@@ -85,7 +84,7 @@ class WeaponController extends Controller
                     'type' => $weapon['type'],
                     'ammo' => $weapon['ammo'],
                     'equipped' => $weapon['equipped'],
-                    'order' => $weapon['order'],
+                    'order' => $index,
                     'notes' => $weapon['notes'],
                 ]);
         }

@@ -47,7 +47,6 @@ class SkillController extends Controller
             '*.misc_score' => 'required|numeric',
             '*.class_skill' => 'required|boolean',
             '*.untrained_skill' => 'required|boolean',
-            '*.order' => 'required|numeric',
         ]);
 
         if ($validator->fails()) {
@@ -61,7 +60,7 @@ class SkillController extends Controller
             return response()->json(['message' => 'Invalid Character!'], 401);
         }
 
-        foreach ($data['data'] as $skill) {
+        foreach ($data['data'] as $index=>$skill) {
             CharacterSkill::whereId($skill['id'])
                 ->where('character_id', '=', $character->id)
                 ->update([
@@ -71,7 +70,7 @@ class SkillController extends Controller
                     'misc_score' => $skill['misc_score'],
                     'class_skill' => $skill['class_skill'],
                     'untrained_skill' => $skill['untrained_skill'],
-                    'order' => $skill['order'],
+                    'order' => $index,
                 ]);
         }
 
