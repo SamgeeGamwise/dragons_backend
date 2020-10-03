@@ -21,19 +21,14 @@ class NoteController extends Controller
             'section_id' => 'required|numeric|max:255',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
+        if ($validator->fails()) return response()->json($validator->errors()->toJson(), 400);
 
         $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) return response()->json(['message' => 'Could not authenticate!'], 401);
         $character = Character::whereId($request->get('character_id'))->where('user_id', '=', $user->id)->first();
-
-        if (!$character) {
-            return response()->json(['message' => 'Invalid Character!'], 401);
-        }
+        if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
 
         $noteSection = NoteSection::whereId($request->get('section_id'))->where('character_id', '=', $character->id)->first();
-
 
         if (!$noteSection) {
             return response()->json(['message' => 'Invalid Section!'], 401);
@@ -49,24 +44,19 @@ class NoteController extends Controller
 
     public function addSection(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'character_id' => 'required|numeric|max:255',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
+        if ($validator->fails()) return response()->json($validator->errors()->toJson(), 400);
 
         $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) return response()->json(['message' => 'Could not authenticate!'], 401);
         $character = Character::whereId($request->get('character_id'))->where('user_id', '=', $user->id)->first();
-
-        if (!$character) {
-            return response()->json(['message' => 'Invalid Character!'], 401);
-        }
+        if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
 
         $section = NoteSection::create([
-            'character_id' => $request->get('character_id'),
+            'character_id' => $character->id,
         ]);
 
         Note::create([
@@ -90,16 +80,12 @@ class NoteController extends Controller
             '*.note.*.order' => 'required|numeric',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
+        if ($validator->fails()) return response()->json($validator->errors()->toJson(), 400);
 
         $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) return response()->json(['message' => 'Could not authenticate!'], 401);
         $character = Character::whereId($data['character_id'])->where('user_id', '=', $user->id)->first();
-
-        if (!$character) {
-            return response()->json(['message' => 'Invalid Character!'], 401);
-        }
+        if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
 
         foreach ($data['data'] as $noteSection) {
             NoteSection::whereId($noteSection['id'])
@@ -135,16 +121,12 @@ class NoteController extends Controller
             'id' => 'required|numeric',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
+        if ($validator->fails()) return response()->json($validator->errors()->toJson(), 400);
 
         $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) return response()->json(['message' => 'Could not authenticate!'], 401);
         $character = Character::whereId($data['character_id'])->where('user_id', '=', $user->id)->first();
-
-        if (!$character) {
-            return response()->json(['message' => 'Invalid Character!'], 401);
-        }
+        if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
 
         Note::whereId($data['id'])->delete();
 
@@ -160,16 +142,12 @@ class NoteController extends Controller
             'id' => 'required|numeric',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
+        if ($validator->fails()) return response()->json($validator->errors()->toJson(), 400);
 
         $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) return response()->json(['message' => 'Could not authenticate!'], 401);
         $character = Character::whereId($data['character_id'])->where('user_id', '=', $user->id)->first();
-
-        if (!$character) {
-            return response()->json(['message' => 'Invalid Character!'], 401);
-        }
+        if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
 
         NoteSection::whereId($data['id'])
             ->where('character_id', '=', $character->id)

@@ -23,8 +23,13 @@ class SkillController extends Controller
             return response()->json($validator->errors()->toJson(), 400);
         }
 
+        $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) return response()->json(['message' => 'Could not authenticate!'], 401);
+        $character = Character::whereId($request->get('character_id'))->where('user_id', '=', $user->id)->first();
+        if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
+
         CharacterSkill::create([
-            'character_id' => $request->get('character_id'),
+            'character_id' => $character->id,
             'character_ability_id' => 1,
             'name' => 'New Skill',
             'order' => 0,
@@ -54,11 +59,10 @@ class SkillController extends Controller
         }
 
         $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) return response()->json(['message' => 'Could not authenticate!'], 401);
         $character = Character::whereId($data['character_id'])->where('user_id', '=', $user->id)->first();
+        if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
 
-        if (!$character) {
-            return response()->json(['message' => 'Invalid Character!'], 401);
-        }
 
         foreach ($data['data'] as $index=>$skill) {
             CharacterSkill::whereId($skill['id'])
@@ -92,11 +96,9 @@ class SkillController extends Controller
         }
 
         $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) return response()->json(['message' => 'Could not authenticate!'], 401);
         $character = Character::whereId($data['character_id'])->where('user_id', '=', $user->id)->first();
-
-        if (!$character) {
-            return response()->json(['message' => 'Invalid Character!'], 401);
-        }
+        if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
 
         CharacterSkill::whereId($data['skill_id'])
             ->where('character_id', '=', $character->id)

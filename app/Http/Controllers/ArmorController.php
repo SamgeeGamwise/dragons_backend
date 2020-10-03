@@ -18,12 +18,16 @@ class ArmorController extends Controller
             'character_id' => 'required|numeric|max:255',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
+        if ($validator->fails()) return response()->json($validator->errors()->toJson(), 400);
+
+        $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) return response()->json(['message' => 'Could not authenticate!'], 401);
+        $character = Character::whereId($request->get('character_id'))->where('user_id', '=', $user->id)->first();
+        if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
+
 
         Armor::create([
-            'character_id' => $request->get('character_id'),
+            'character_id' => $character->id,
             'notes' => 'Crude armor consisting of thick furs and pelts.',
         ]);
 
@@ -48,16 +52,12 @@ class ArmorController extends Controller
             '*.notes' => 'required|string'
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
+        if ($validator->fails()) return response()->json($validator->errors()->toJson(), 400);
 
         $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) return response()->json(['message' => 'Could not authenticate!'], 401);
         $character = Character::whereId($data['character_id'])->where('user_id', '=', $user->id)->first();
-
-        if (!$character) {
-            return response()->json(['message' => 'Invalid Character!'], 401);
-        }
+        if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
 
         foreach ($data['data'] as $index=>$armor) {
             Armor::whereId($armor['id'])
@@ -90,16 +90,12 @@ class ArmorController extends Controller
             'armor_id' => 'required|numeric',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
+        if ($validator->fails()) return response()->json($validator->errors()->toJson(), 400);
 
         $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) return response()->json(['message' => 'Could not authenticate!'], 401);
         $character = Character::whereId($data['character_id'])->where('user_id', '=', $user->id)->first();
-
-        if (!$character) {
-            return response()->json(['message' => 'Invalid Character!'], 401);
-        }
+        if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
 
         Armor::whereId($data['armor_id'])
             ->where('character_id', '=', $character->id)

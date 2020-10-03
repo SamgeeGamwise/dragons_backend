@@ -321,16 +321,12 @@ class CharacterController extends Controller
             '*.temp_score' => 'required|numeric',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
+        if ($validator->fails()) return response()->json($validator->errors()->toJson(), 400);
 
         $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) return response()->json(['message' => 'Could not authenticate!'], 401);
         $character = Character::whereId($data['character_id'])->where('user_id', '=', $user->id)->first();
-
-        if (!$character) {
-            return response()->json(['message' => 'Invalid Character!'], 401);
-        }
+        if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
 
         foreach ($data['data'] as $ability) {
             CharacterAbility::whereId($ability['id'])
@@ -364,16 +360,12 @@ class CharacterController extends Controller
             'multi_experience' => 'numeric|nullable',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
+        if ($validator->fails()) return response()->json($validator->errors()->toJson(), 400);
 
         $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) return response()->json(['message' => 'Could not authenticate!'], 401);
         $character = Character::whereId($data['character_id'])->where('user_id', '=', $user->id)->first();
-
-        if (!$character) {
-            return response()->json(['message' => 'Invalid Character!'], 401);
-        }
+        if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
 
         Character::whereId($character->id)
             ->update([
@@ -405,20 +397,16 @@ class CharacterController extends Controller
             '*.temp_score' => 'required|numeric',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
+        if ($validator->fails()) return response()->json($validator->errors()->toJson(), 400);
 
         $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) return response()->json(['message' => 'Could not authenticate!'], 401);
         $character = Character::whereId($data['character_id'])->where('user_id', '=', $user->id)->first();
-
-        if (!$character) {
-            return response()->json(['message' => 'Invalid Character!'], 401);
-        }
+        if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
 
         foreach ($data['data'] as $savingThrow) {
             CharacterSavingThrow::whereId($savingThrow['id'])
-                ->where('character_id', '=', $data['character_id'])
+                ->where('character_id', '=', $character->id)
                 ->update([
                     'base_score' => $savingThrow['base_score'],
                     'magic_score' => $savingThrow['magic_score'],
@@ -442,19 +430,15 @@ class CharacterController extends Controller
             'total_hp' => 'required|numeric',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
+        if ($validator->fails()) return response()->json($validator->errors()->toJson(), 400);
 
         $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) return response()->json(['message' => 'Could not authenticate!'], 401);
         $character = Character::whereId($characterId)->where('user_id', '=', $user->id)->first();
-
-        if (!$character) {
-            return response()->json(['message' => 'Invalid Character!'], 401);
-        }
+        if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
 
         HealthPoint::whereId($healthPoints['id'])
-            ->where('character_id', '=', $characterId)
+            ->where('character_id', '=', $character->id)
             ->update([
                 'damage' => $healthPoints['damage'],
                 'non_lethal' => $healthPoints['non_lethal'],
@@ -477,19 +461,15 @@ class CharacterController extends Controller
             'misc_bonus' => 'required|numeric',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
+        if ($validator->fails()) return response()->json($validator->errors()->toJson(), 400);
 
         $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) return response()->json(['message' => 'Could not authenticate!'], 401);
         $character = Character::whereId($characterId)->where('user_id', '=', $user->id)->first();
-
-        if (!$character) {
-            return response()->json(['message' => 'Invalid Character!'], 401);
-        }
+        if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
 
         ArmorClass::whereId($armorClass['id'])
-            ->where('character_id', '=', $characterId)
+            ->where('character_id', '=', $character->id)
             ->update([
                 'armor_bonus' => $armorClass['armor_bonus'],
                 'natural_bonus' => $armorClass['natural_bonus'],
@@ -510,19 +490,15 @@ class CharacterController extends Controller
             'misc_bonus' => 'required|numeric',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
+        if ($validator->fails()) return response()->json($validator->errors()->toJson(), 400);
 
         $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) return response()->json(['message' => 'Could not authenticate!'], 401);
         $character = Character::whereId($characterId)->where('user_id', '=', $user->id)->first();
-
-        if (!$character) {
-            return response()->json(['message' => 'Invalid Character!'], 401);
-        }
+        if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
 
         Grapple::whereId($grapple['id'])
-            ->where('character_id', '=', $characterId)
+            ->where('character_id', '=', $character->id)
             ->update([
                 'size_bonus' => $grapple['size_bonus'],
                 'misc_bonus' => $grapple['misc_bonus'],
@@ -543,19 +519,15 @@ class CharacterController extends Controller
             'fourth_bonus' => 'numeric|nullable',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
+        if ($validator->fails()) return response()->json($validator->errors()->toJson(), 400);
 
         $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) return response()->json(['message' => 'Could not authenticate!'], 401);
         $character = Character::whereId($characterId)->where('user_id', '=', $user->id)->first();
-
-        if (!$character) {
-            return response()->json(['message' => 'Invalid Character!'], 401);
-        }
+        if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
 
         BaseAttack::whereId($baseAttack['id'])
-            ->where('character_id', '=', $characterId)
+            ->where('character_id', '=', $character->id)
             ->update([
                 'base_bonus' => $baseAttack['base_bonus'],
                 'second_bonus' => $baseAttack['second_bonus'],
@@ -575,19 +547,15 @@ class CharacterController extends Controller
             'misc_bonus' => 'required|numeric',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
+        if ($validator->fails()) return response()->json($validator->errors()->toJson(), 400);
 
         $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) return response()->json(['message' => 'Could not authenticate!'], 401);
         $character = Character::whereId($characterId)->where('user_id', '=', $user->id)->first();
-
-        if (!$character) {
-            return response()->json(['message' => 'Invalid Character!'], 401);
-        }
+        if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
 
         Initiative::whereId($initiative['id'])
-            ->where('character_id', '=', $characterId)
+            ->where('character_id', '=', $character->id)
             ->update([
                 'misc_bonus' => $initiative['misc_bonus'],
             ]);
