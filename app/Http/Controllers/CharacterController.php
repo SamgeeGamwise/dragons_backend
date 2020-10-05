@@ -5,21 +5,20 @@ namespace App\Http\Controllers;
 use App\Ability;
 use App\Armor;
 use App\ArmorClass;
+use App\BaseAttack;
 use App\Character;
 use App\CharacterAbility;
 use App\CharacterSavingThrow;
 use App\CharacterSkill;
 use App\Grapple;
-use App\BaseAttack;
 use App\HealthPoint;
+use App\Http\Resources\Character as CharacterResource;
 use App\Initiative;
 use App\Note;
 use App\NoteSection;
 use App\SavingThrow;
 use App\Skill;
 use App\Weapon;
-
-use App\Http\Resources\Character as CharacterResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -67,7 +66,7 @@ class CharacterController extends Controller
             ->join('character_abilities', 'character_abilities.character_id', '=', 'characters.id')
             ->join('abilities', 'abilities.id', '=', 'character_abilities.ability_id')
             ->where('character_saving_throws.character_id', '=', $id)
-            ->whereColumn('character_saving_throws.character_ability_id', '=', 'abilities.id')
+            ->whereColumn('character_saving_throws.character_ability_id', '=', 'character_abilities.id')
             ->get());
 
         $character->armor = (Armor::select(
@@ -120,7 +119,7 @@ class CharacterController extends Controller
             ->join('character_abilities', 'character_abilities.character_id', '=', 'characters.id')
             ->join('abilities', 'abilities.id', '=', 'character_abilities.ability_id')
             ->where('armor_classes.character_id', '=', $id)
-            ->whereColumn('armor_classes.character_ability_id', '=', 'abilities.id')
+            ->whereColumn('armor_classes.character_ability_id', '=', 'character_abilities.id')
             ->get());
 
 
@@ -143,7 +142,7 @@ class CharacterController extends Controller
             ->join('character_abilities', 'character_abilities.character_id', '=', 'characters.id')
             ->join('abilities', 'abilities.id', '=', 'character_abilities.ability_id')
             ->where('grapples.character_id', '=', $id)
-            ->whereColumn('grapples.character_ability_id', '=', 'abilities.id')
+            ->whereColumn('grapples.character_ability_id', '=', 'character_abilities.id')
             ->get());
 
         $character->health_points = (HealthPoint::select(
@@ -166,7 +165,7 @@ class CharacterController extends Controller
             ->join('character_abilities', 'character_abilities.character_id', '=', 'characters.id')
             ->join('abilities', 'abilities.id', '=', 'character_abilities.ability_id')
             ->where('initiatives.character_id', '=', $id)
-            ->whereColumn('initiatives.character_ability_id', '=', 'abilities.id')
+            ->whereColumn('initiatives.character_ability_id', '=', 'character_abilities.id')
             ->get());
 
         $character->skills = (CharacterSkill::select(
@@ -174,6 +173,7 @@ class CharacterController extends Controller
             'character_skills.name',
             'abilities.id AS ability_id',
             'abilities.code',
+            'character_abilities.id AS character_ability_id',
             'character_abilities.score',
             'character_abilities.temp_score',
             'character_skills.rank_score',
@@ -186,7 +186,7 @@ class CharacterController extends Controller
             ->join('character_abilities', 'character_abilities.character_id', '=', 'characters.id')
             ->join('abilities', 'abilities.id', '=', 'character_abilities.ability_id')
             ->where('character_skills.character_id', '=', $id)
-            ->whereColumn('character_skills.character_ability_id', '=', 'abilities.id')
+            ->whereColumn('character_skills.character_ability_id', '=', 'character_abilities.id')
             ->orderBy('character_skills.order', 'ASC')
             ->orderBy('character_skills.name', 'ASC')
             ->get());
@@ -208,13 +208,13 @@ class CharacterController extends Controller
     {
         $user = JWTAuth::parseToken()->authenticate();
 
-        $characters = Character::select('name', 'id')->where("user_id", "=", $user->id)->get();
+        $characters = Character::select('name', 'race', 'id')->where("user_id", "=", $user->id)->get();
 
         if (empty($characters)) {
             return new CharacterResource(null);
         }
 
-        return  new CharacterResource($characters);
+        return new CharacterResource($characters);
     }
 
     //  POST
@@ -252,19 +252,52 @@ class CharacterController extends Controller
             ]);
         }
 
-        $dex = CharacterAbility::select()
+        $characterAbilities = CharacterAbility::select('character_abilities.id', 'character_abilities.ability_id', 'abilities.code')
             ->join('abilities', 'abilities.id', '=', 'character_abilities.ability_id')
-            ->where('abilities.code', '=', 'DEX')
             ->where('character_abilities.character_id', '=', $character->id)
-            ->first();
+            ->get();
 
-        $str = CharacterAbility::select()
-            ->join('abilities', 'abilities.id', '=', 'character_abilities.ability_id')
-            ->where('abilities.code', '=', 'STR')
-            ->where('character_abilities.character_id', '=', $character->id)
-            ->first();
+        $dex = 0;
+        $str = 0;
+
+        foreach ($characterAbilities as $ability) {
+            if ($ability->code === 'DEX')
+                $dex = $ability->id;
+            elseif ($ability->code === 'STR')
+                $str = $ability->id;
+        }
+
+        ArmorClass::create([
+            'character_id' => $character->id,
+            'character_ability_id' => $dex,
+        ]);
+
+        BaseAttack::create([
+            'character_id' => $character->id,
+        ]);
+
+        Grapple::create([
+            'character_id' => $character->id,
+            'character_ability_id' => $str,
+        ]);
+
+        HealthPoint::create([
+            'character_id' => $character->id,
+        ]);
+
+        Initiative::create([
+            'character_id' => $character->id,
+            'character_ability_id' => $dex,
+        ]);
 
         $saving_throws = SavingThrow::select()->get();
+
+        foreach ($saving_throws as $saving_throw) {
+            foreach ($characterAbilities as $ability) {
+                if ($saving_throw->ability_id === $ability->ability_id)
+                    $saving_throw->ability_id = $ability->id;
+            }
+        }
 
         foreach ($saving_throws as $saving_throw) {
             CharacterSavingThrow::create([
@@ -277,6 +310,13 @@ class CharacterController extends Controller
         $skills = Skill::select()->get();
 
         foreach ($skills as $skill) {
+            foreach ($characterAbilities as $ability) {
+                if ($skill->ability_id === $ability->ability_id)
+                    $skill->ability_id = $ability->id;
+            }
+        }
+
+        foreach ($skills as $skill) {
             CharacterSkill::create([
                 'character_id' => $character->id,
                 'character_ability_id' => $skill->ability_id,
@@ -285,34 +325,12 @@ class CharacterController extends Controller
             ]);
         }
 
-        ArmorClass::create([
-            'character_id' => $character->id,
-            'character_ability_id' =>  $dex->id,
-        ]);
-
-        BaseAttack::create([
-            'character_id' => $character->id,
-        ]);
-
-        Grapple::create([
-            'character_id' => $character->id,
-            'character_ability_id' =>  $str->id,
-        ]);
-
-        HealthPoint::create([
-            'character_id' => $character->id,
-        ]);
-
-        Initiative::create([
-            'character_id' => $character->id,
-            'character_ability_id' =>  $dex->id,
-        ]);
-
         return response()->json(compact('character'), 201);
     }
 
     // PUT
-    public function updateAbilities(Request $request)
+    public
+    function updateAbilities(Request $request)
     {
         $data = $request->all();
 
@@ -340,7 +358,8 @@ class CharacterController extends Controller
         return response()->json(201);
     }
 
-    public function updateSummary(Request $request)
+    public
+    function updateSummary(Request $request)
     {
 
         $data = $request->all();
@@ -386,7 +405,8 @@ class CharacterController extends Controller
         return response()->json(201);
     }
 
-    public function updateSavingThrows(Request $request)
+    public
+    function updateSavingThrows(Request $request)
     {
         $data = $request->all();
 
@@ -418,7 +438,8 @@ class CharacterController extends Controller
         return response()->json(201);
     }
 
-    public function updateHP(Request $request)
+    public
+    function updateHP(Request $request)
     {
         $characterId = $request->all()['character_id'];
         $healthPoints = $request->all()['data'];
@@ -449,7 +470,8 @@ class CharacterController extends Controller
         return response()->json(201);
     }
 
-    public function updateAC(Request $request)
+    public
+    function updateAC(Request $request)
     {
         $characterId = $request->all()['character_id'];
         $armorClass = $request->all()['data'];
@@ -480,7 +502,8 @@ class CharacterController extends Controller
         return response()->json(201);
     }
 
-    public function updateGrapple(Request $request)
+    public
+    function updateGrapple(Request $request)
     {
         $characterId = $request->all()['character_id'];
         $grapple = $request->all()['data'];
@@ -507,7 +530,8 @@ class CharacterController extends Controller
         return response()->json(201);
     }
 
-    public function updateBaseAttack(Request $request)
+    public
+    function updateBaseAttack(Request $request)
     {
         $characterId = $request->all()['character_id'];
         $baseAttack = $request->all()['data'];
@@ -538,7 +562,8 @@ class CharacterController extends Controller
         return response()->json(201);
     }
 
-    public function updateInitiative(Request $request)
+    public
+    function updateInitiative(Request $request)
     {
         $characterId = $request->all()['character_id'];
         $initiative = $request->all()['data'];
@@ -564,5 +589,18 @@ class CharacterController extends Controller
     }
 
     // DELETE
+    public
+    function deleteCharacter(Request $request)
+    {
+        $characterId = $request->all()['character_id'];
+        $user = JWTAuth::parseToken()->authenticate();
 
+        if (!$user) return response()->json(['message' => 'Could not authenticate!'], 401);
+        $character = Character::whereId($characterId)->where('user_id', '=', $user->id)->first();
+        if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
+
+        Character::whereId($character->id)->delete();
+
+        return response()->json(200);
+    }
 }

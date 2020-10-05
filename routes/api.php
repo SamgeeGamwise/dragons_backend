@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/test', 'CharacterController@test');
+
 Route::group([
     'middleware' =>  ['api'],
     'prefix' => 'user'
@@ -53,6 +55,8 @@ Route::group([
     Route::get('/{id}', 'CharacterController@getById');
 
     Route::post('/', 'CharacterController@create');
+
+    Route::delete('/', 'CharacterController@deleteCharacter');
 
     Route::put('/abilities', 'CharacterController@updateAbilities');
     Route::put('/summary', 'CharacterController@updateSummary');

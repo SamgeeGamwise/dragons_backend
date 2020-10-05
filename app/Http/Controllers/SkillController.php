@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Character;
+use App\CharacterAbility;
 use App\CharacterSkill;
 
 use Illuminate\Http\Request;
@@ -48,6 +49,7 @@ class SkillController extends Controller
         $validator = Validator::make($data['data'], [
             '*.name' => 'required|string',
             '*.ability_id' => 'required|numeric',
+            '*.character_ability_id' => 'required|numeric',
             '*.rank_score' => 'required|numeric',
             '*.misc_score' => 'required|numeric',
             '*.class_skill' => 'required|boolean',
@@ -63,13 +65,20 @@ class SkillController extends Controller
         $character = Character::whereId($data['character_id'])->where('user_id', '=', $user->id)->first();
         if (!$character) return response()->json(['message' => 'Invalid Character!'], 401);
 
+        $abilities = CharacterAbility::select('id', 'ability_id')->where('character_id', '=', $character->id)->get();
 
         foreach ($data['data'] as $index=>$skill) {
+
+            foreach ($abilities as $ability) {
+                if($ability->ability_id === $skill['ability_id'])
+                    $skill['character_ability_id'] = $ability->id;
+            }
+
             CharacterSkill::whereId($skill['id'])
                 ->where('character_id', '=', $character->id)
                 ->update([
                     'name' => $skill['name'],
-                    'character_ability_id' => $skill['ability_id'],
+                    'character_ability_id' => $skill['character_ability_id'],
                     'rank_score' => $skill['rank_score'],
                     'misc_score' => $skill['misc_score'],
                     'class_skill' => $skill['class_skill'],
