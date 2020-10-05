@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/test', 'CharacterController@test');
+Route::get('/test', 'ChatController@test');
 
 Route::group([
     'middleware' =>  ['api'],
