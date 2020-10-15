@@ -51,7 +51,7 @@ class SpellsController extends Controller
             $query->where('spell_levels.level', '=', $level);
         $query->groupBy('spells.id');
         $query->orderBy('spells.name', 'ASC');
-        $query->limit(100);
+        $query->limit(10);
 
         $spells = $query->get();
 

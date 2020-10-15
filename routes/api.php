@@ -91,4 +91,8 @@ Route::group([
     'prefix' => 'campaign'
 ], function () {
     Route::get('/', 'CampaignController@all');
+    Route::post('/', 'CampaignController@addCampaign');
+    Route::post('/join', 'CampaignController@joinCampaign');
+    Route::put('/', 'CampaignController@updateCampaign');
+    Route::delete('/', 'CampaignController@deleteCampaign');
 });

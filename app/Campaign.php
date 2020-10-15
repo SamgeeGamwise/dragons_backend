@@ -6,9 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Campaign extends Model
 {
-    protected $fillable = ['name', 'code',];
-
-    protected $hidden = [
-        'code',
-    ];
+    protected $fillable = ['name', 'code'];
 }
